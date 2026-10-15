@@ -1,0 +1,123 @@
+/* 
+ESSE ARQUIVO É O CSS GLOBAL. se alguma pagina tiver um requisito que nao seja 
+completo pelo global.css, terá um arquivo .css específico para a pagina.
+
+*/
+
+body {
+    background-color: white;
+    font-family: apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.title{
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.texto-simples{
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 400;
+    line-height: 1.5;
+    font-family: apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); /*sombra*/
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    padding: 0;
+
+
+}
+
+.form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.button{
+        width: 100%;
+        padding: 15px;
+        background-color: #3ac3b5;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+}
+
+.error-message{
+    color: red;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    font-family: apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+}
+
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .card .error-message {
+    color: #c62828;
+    min-height: 1.25em;
+    width: 100%;
+  }

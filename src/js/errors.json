@@ -1,0 +1,29 @@
+{
+    "status": 400,
+    "message": "Bad Request",
+    "description": "The request was invalid"
+},
+{
+    "status": 401,
+    "message": "Unauthorized",
+    "description": "The request was unauthorized"
+}, {
+    "status": 403,
+    "message": "Forbidden",
+    "description": "The request was forbidden"
+},
+{
+    "status": 403,
+    "message": "Forbidden",
+    "description": "The request was forbidden"
+},
+{
+    "status": 404,
+    "message": "Not Found",
+    "description": "The request was not found"
+},
+{
+    "status": 500,
+    "message": "Internal Server Error",
+    "description": "The server encountered an error"
+}
