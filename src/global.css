@@ -121,3 +121,39 @@ body {
     min-height: 1.25em;
     width: 100%;
   }
+
+.dashboard_left {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #1a7baf;
+    border-right: 1px solid #ccc;
+}
+
+.dashboard_left a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+/* link do dashboard_left */
+
+.dashboard_left a:hover {
+    background-color: #89c5ef;
+    color: white;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+/* o a:hover é para quando o mouse passar sobre o link, 
+o background-color muda para #3ac3b5 e o color para white 
+e a transição é de 0.3s e o cursor muda para pointer (mao clicando) */

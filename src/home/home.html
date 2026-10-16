@@ -7,8 +7,25 @@
         <link rel="stylesheet" href="../global.css">
     </head>
 <body>
-        <div class="container">
-            <h1>Home</h1>
-        </div>
-    </body>
+  <div class="dashboard_left">
+    <a href="../home/home.html">Dashboard</a>
+    <a href="../home/home.html">Pacientes</a>
+    <a href="../home/home.html">Avaliações</a>
+    <a href="../home/home.html">Relatórios</a>
+    <a href="../home/home.html" onclick="limparSessao()">Sair</a>
+  </div>
+  <div class="container">
+    <div class="main_card">
+      <form method="post" action="../home/home.html">
+        <h1>Bem-vindo ao sistema de avaliações</h1>
+        <p>Aqui você pode avaliar os pacientes e gerar relatórios</p>
+        <input type="checkbox" id="teste" name="teste" value="teste">
+        <label for="teste">Teste</label>
+        <button type="submit">Avaliar</button>
+      </form>
+      </div>
+    </div>
+  </div>
+  <script src="../js/session.js"></script>
+</body>
 </html>

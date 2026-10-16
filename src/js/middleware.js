@@ -1,6 +1,15 @@
 import DTO from './dto.js';
 import { validarLogin, validarRegistro } from './validacaoCampos.js';
 
+/* 
+regra de código de front-end:
+
+DTO é a classe que faz a validação dos dados do usuário
+validarRegistro é a função que valida os dados do usuário para o registro
+validarLogin é a função que valida os dados do usuário para o login
+createUserMiddleware é a função que cria o usuário no banco de dados
+createLoginMiddleware é a função que faz o login do usuário no banco de dados e retorna o usuário logado
+*/
 class RegisterMiddleware {
   static validateRegisterMiddleware(req, res, next) {
     const result = validarRegistro(req.body);

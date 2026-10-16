@@ -2,7 +2,10 @@ node_modules
 prisma
 
 __pycache__/
-*.py[cod]
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
 .venv/
 venv/
 env/

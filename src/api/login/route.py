@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, session
 from sqlalchemy import select
 
 from db.database import database
@@ -32,6 +32,10 @@ def login():
         return jsonify({'error': 'Usuário ou senha inválidos'}), 401
 
     print('[login] ok, id:', usuario.id)
+
+    session.permanent = True
+    session['user_id'] = usuario.id
+
     return jsonify({
         'id': usuario.id,
         'nome': usuario.nome,
@@ -39,6 +43,20 @@ def login():
     })
 
 
+def ver_sessao():
+    user_id = session.get('user_id')
+    if user_id is None:
+        return jsonify({'ok': False}), 401
+    return jsonify({'ok': True, 'user_id': user_id})
+
+
+def logout():
+    session.clear()
+    return jsonify({'ok': True})
+
+
 def registrar_rotas_login(app):
     app.add_url_rule('/api/login', view_func=login, methods=['POST'])
+    app.add_url_rule('/api/sessao', view_func=ver_sessao, methods=['GET'])
+    app.add_url_rule('/api/logout', view_func=logout, methods=['POST'])
     print('[login] rota POST /api/login registrada')
