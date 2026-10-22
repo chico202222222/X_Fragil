@@ -39,29 +39,22 @@ em produção, use `APP_ENV=production`, HTTPS e um servidor WSGI, não o servid
 o modo de produção exige cookies de sessão via HTTPS e desativa o debug.
 em desenvolvimento, use `FLASK_DEBUG=1` apenas quando precisar.
 os cookies são `HttpOnly` e `SameSite=Lax` em todos os ambientes.
+isso evita muita coisa 
 
-use uma chave diferente por ambiente e guarde os segredos nas variáveis ou no gerenciador de segredos da hospedagem.
-não coloque a chave no frontend. se ela vazar, troque-a; isso invalida os cookies de sessão antigos.
+use uma chave diferente por ambiente e guarde os segredos nas variáveis, ou no gerenciador de segredos da hospedagem (provavel q seja railway)
+não coloque a chave no frontend!!! se ela vazar, troque-a; isso invalida os cookies de sessão antigos.
 o bcrypt não usa essa chave: ela serve para assinar as sessões do flask.
 
 ## Senhas no backend Python
 
-Instale as dependências com `.venv/bin/python -m pip install -r requirements.txt`.
-As senhas atribuídas ao modelo `User` são salvas como hash bcrypt, e o login verifica esse hash.
-O limite é de 72 bytes por senha (caracteres acentuados podem ocupar mais de um byte).
-O navegador continua enviando a senha ao backend; use HTTPS em produção.
-
-Para converter senhas antigas em texto puro, faça um backup do banco e execute:
+instale as dependências com `.venv/bin/python -m pip install -r requirements.txt`.
+as senhas atribuídas ao modelo `User` são salvas como hash bcrypt, e o login verifica esse hash ..
 
 ```sh
 .venv/bin/python src/api/migrar_senhas.py
 ```
 
-O comando usa `DATABASE_URL` ou, por padrão, `prisma/dev.db`. Hashes bcrypt existentes não são alterados.
-Se uma senha antiga ultrapassar 72 bytes, a migração é cancelada sem salvar alterações; redefina essa senha antes de tentar novamente.
-Esta integração é do backend Python; os arquivos antigos de DTO JavaScript não fazem parte desse fluxo.
-
-Para rodar os testes sem alterar o banco real:
+p rodar os testes sem alterar o banco real:
 
 ```sh
 .venv/bin/python -m unittest discover -s src/api -p test_senhas.py -v
