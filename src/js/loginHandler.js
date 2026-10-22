@@ -1,4 +1,17 @@
-import { validateLogin } from './validacaoCampos.js';
+function validateLogin(form) {
+  const email = form.email.value;
+  const senha = form.senha.value;
+
+  if (!form.email.checkValidity()) {
+    return { error: 'Email inválido' };
+  }
+
+  if (senha.length < 8 || senha.length > 255) {
+    return { error: 'Senha precisa ter entre 8 e 255 caracteres' };
+  }
+
+  return { data: { email, senha } };
+}
 
 const form = document.getElementById('login-form');
 const erro = document.getElementById('msgerro');
@@ -14,14 +27,14 @@ async function enviarLogin(credentials) {
   const body = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, body };
 }
-
+// res = response
 fetch('/api/sessao', { credentials: 'include' }).then((res) => {
   if (res.ok) {
     window.location.href = '../home/home.html';
   }
 });
 
-form.addEventListener('submit', async (event) => {
+form.addEventListener('submit', async (event) => { // o event é o evento que foi disparado pelo formulário
   event.preventDefault();
   erro.textContent = '';
 
@@ -40,8 +53,11 @@ form.addEventListener('submit', async (event) => {
     }
 
     if (!result.ok) {
-      const msg = result.body.error; // erro do corpo da resposta (descrição do erro)
-      erro.textContent = msg;
+      if (result.body.error) {
+        erro.textContent = result.body.error;
+      } else {
+        erro.textContent = 'Não foi possível conectar ao servidor';
+      }
       return;
     }
     window.location.href = '../home/home.html';

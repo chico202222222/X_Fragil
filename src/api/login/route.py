@@ -3,31 +3,32 @@ from sqlalchemy import select
 
 from db.database import database
 from db.models import User
+from db.senhas import verificar_senha
 
 
 def login():
     print('[login] alguem chamou POST /api/login')
 
     dados = request.get_json(silent=True)
-    if dados is None:
-        dados = {}
-
-    print('[login] json recebido:', dados)
+    if not isinstance(dados, dict):
+        return jsonify({'error': 'Dados inválidos'}), 400
 
     email = dados.get('email', '')
     senha = dados.get('senha', '')
 
+    if not isinstance(email, str) or not isinstance(senha, str):
+        return jsonify({'error': 'Dados inválidos'}), 400
+    if len(senha.encode('utf-8')) > 72:
+        return jsonify({'error': 'Senha deve ter no máximo 72 bytes'}), 400
+
     sessao = database.abrir_sessao()
     try:
-        consulta = select(User).where(
-            User.email == email,
-            User.senha == senha,
-        )
+        consulta = select(User).where(User.email == email)
         usuario = sessao.execute(consulta).scalar_one_or_none()
     finally:
         sessao.close()
 
-    if usuario is None:
+    if usuario is None or not verificar_senha(senha, usuario.senha):
         print('[login] usuario nao encontrado')
         return jsonify({'error': 'Usuário ou senha inválidos'}), 401
 

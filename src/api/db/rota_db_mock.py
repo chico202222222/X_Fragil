@@ -1,3 +1,4 @@
+import bcrypt
 import sqlite3
 import os
 
@@ -15,6 +16,7 @@ class MockDB:
         if self.conn is not None:
             self.conn.close()
     def insert(self, name, email, password):
+        password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         cursor = self.conn.cursor()
         cursor.execute('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', (name, email, password))
         self.conn.commit()

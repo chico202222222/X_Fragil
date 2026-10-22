@@ -1,3 +1,4 @@
+// deprecado, html tem validacao nativa, mas é bom deixar aqui
 import { z } from 'zod';
 
 export function dadosDoForm(form) {
