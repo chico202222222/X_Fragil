@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - X Frágil</title>
+    <link rel="stylesheet" href="../global.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">Bem-vindo!</h1>
+      <p> Sistema de Triagem da Síndrome do X Frágil</p>
+      <div class="card">
+        <form class="form" id="login-form" novalidate>
+          <label class="sr-only" for="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            placeholder="email@email.com"
+            required
+            minlength="4"
+            maxlength="255"
+            autocomplete="email"
+          >
+          <label class="sr-only" for="senha">Senha</label>
+          <input
+            id="senha"
+            type="password"
+            name="senha"
+            placeholder="********"
+            required
+            minlength="8"
+            maxlength="255"
+            autocomplete="current-password"
+          >
+          <button type="submit" class="button">Entrar</button>
+          <p id="msgerro" class="error-message" role="alert" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+    <script type="module" src="../js/loginHandler.js"></script>
+  </body>
+</html>
