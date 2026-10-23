@@ -1,2 +1,8 @@
 src/node_modules/
 src/prisma/
+
+# Python
+__pycache__/
+*.pyc
+.env
+.venv/
