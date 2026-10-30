@@ -1,9 +1,11 @@
-from flask import Flask
+"""Ponto de entrada da API do Sistema X Frágil."""
+from flask import Flask, jsonify
 from sqlalchemy import text
 
 from config import Config
 from database import db, migrate
 
+# Importar os modelos permite que o SQLAlchemy reconheça as tabelas.
 from models.usuario import Usuario
 from models.paciente import Paciente
 from models.avaliacao import Avaliacao
@@ -17,46 +19,36 @@ from routes.respostas import respostas_bp
 from routes.usuarios import usuarios_bp
 from routes.auth import auth_bp
 
+from limiter import limiter
+from csrf_utils import csrf_bp
+
 app = Flask(__name__)
-
-#carregando as configuracoes do mysql
-
 app.config.from_object(Config)
-
-#inicinaod os bancos e migracao
 
 db.init_app(app)
 migrate.init_app(app, db)
+limiter.init_app(app)
 
-app.register_blueprint(sintomas_bp)
-app.register_blueprint(pacientes_bp)
-app.register_blueprint(avaliacoes_bp)
-app.register_blueprint(respostas_bp)
-app.register_blueprint(usuarios_bp)
-app.register_blueprint(auth_bp)
+# Cada grupo de rotas cuida de uma parte do sistema.
+for grupo in (sintomas_bp, pacientes_bp, avaliacoes_bp,
+              respostas_bp, usuarios_bp, auth_bp,csrf_bp):
+    app.register_blueprint(grupo)
 
-@app.route("/")
+
+@app.get("/")
 def inicio():
-    return {"Sistema de Triagem da Sindrome do X fragil"
-    }
+    return jsonify({"mensagem": "API do Sistema de Triagem do X Frágil"})
 
 
-@app.route("/api/teste-banco")
+@app.get("/api/teste-banco")
 def testar_banco():
     try:
-
         db.session.execute(text("SELECT 1"))
-
-        return {
-            "status": "sucesso",
-            "mensagem":"Conexao com MySQl funcionando"
-        }
+        return jsonify({"status": "sucesso", "mensagem": "MySQL conectado"})
     except Exception:
-        app.logger.exception("Erro ao conectar ao banco")
-        return {
-            "status":"erro",
-            "mensagem":"Nao foi possivel conectar ao banco"
-        }, 500
+        app.logger.exception("Falha ao conectar ao MySQL")
+        return jsonify({"status": "erro", "mensagem": "Erro de conexão com o banco"}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=False)

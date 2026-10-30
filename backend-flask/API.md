@@ -1,142 +1,336 @@
-Documentação da API
-Sistema de Triagem da Síndrome do X Frágil
-1. Apresentação
-Este documento reúne os endpoints desenvolvidos para o backend do Sistema de Triagem da Síndrome do X Frágil, projeto da disciplina de Experiência Criativa.
+# Documentação da API
+## Sistema de Triagem da Síndrome do X Frágil
 
-A API foi construída em Python com Flask. Ela recebe as informações enviadas pelas telas do sistema, valida os dados e realiza consultas ou alterações no banco MySQL.
+### 1. Apresentação
 
-O documento também serve de referência para a integração com o frontend, desenvolvido em HTML, CSS e JavaScript por outro integrante da equipe.
-2. Tecnologias utilizadas
-- Python e Flask: desenvolvimento do backend e das rotas HTTP.
-- Flask-SQLAlchemy: acesso ao banco de dados por meio de modelos Python.
-- MySQL: armazenamento de pacientes, avaliações, sintomas e respostas.
-- Flask-Migrate: gerenciamento de alterações na estrutura do banco.
-- JSON: formato utilizado na comunicação entre frontend e backend.
-Endereço de desenvolvimento: http://127.0.0.1:5000
-3. Endpoints disponíveis
-3.1. Consultar sintomas
-Método: GET
-Endpoints:
-- /api/sintomas?sexo=masculino
-- /api/sintomas?sexo=feminino
-Retorna os sintomas utilizados no checklist, conforme o sexo informado na requisição. Atualmente, o checklist masculino tem 12 sintomas, e o feminino, 11.
-3.2. Cadastrar paciente
-Método: POST
-Endpoint: /api/pacientes
+Este documento apresenta os endpoints desenvolvidos para o backend do Sistema de Triagem da Síndrome do X Frágil, projeto da disciplina de Experiência Criativa da PUCPR.
 
-Cadastra um paciente no sistema.
+A API foi desenvolvida em Python com Flask. Sua função é receber as informações enviadas pelo frontend, validar os dados, aplicar as regras do sistema e realizar operações no banco MySQL.
 
-Exemplo de corpo da requisição:
+O frontend é desenvolvido em HTML, CSS e JavaScript por outro integrante da equipe.
+
+O sistema tem finalidade acadêmica e utiliza uma pontuação experimental. Seus resultados não representam diagnóstico médico.
+
+### 2. Tecnologias utilizadas
+
+- **Python e Flask:** desenvolvimento do backend e dos endpoints HTTP.
+- **Flask-SQLAlchemy:** comunicação com o banco por meio de modelos Python.
+- **MySQL:** armazenamento dos usuários, pacientes, sintomas, avaliações e respostas.
+- **Flask-Migrate e Alembic:** controle das alterações na estrutura do banco.
+- **JSON:** comunicação entre frontend e backend.
+- **bcrypt:** armazenamento seguro de senhas por meio de hash.
+- **Sessões Flask:** identificação dos usuários autenticados.
+- **Proteção CSRF:** validação de tokens nas requisições que modificam dados.
+- **Flask-Limiter:** limitação de requisições, incluindo tentativas de login.
+- **pytest:** execução dos testes automatizados.
+
+Endereço local de desenvolvimento: `http://127.0.0.1:5000`
+
+### 3. Endpoints disponíveis
+
+#### 3.1. Autenticação de usuário
+
+**Método:** POST
+
+**Endpoint:** `/api/login`
+
+Recebe as credenciais do usuário e verifica se o acesso é permitido.
+
+Exemplo:
+
+```json
+{
+  "email": "usuario@exemplo.com",
+  "senha": "SenhaExemplo123"
+}
+```
+
+Se as credenciais forem válidas, o sistema cria uma sessão autenticada.
+
+**Outros endpoints de autenticação:**
+
+- `POST /api/logout` — encerra a sessão.
+- `GET /api/sessao` — consulta informações da sessão atual.
+- `GET /api/csrf-token` — obtém um token de proteção CSRF.
+
+O login e o logout exigem um token CSRF válido.
+
+#### 3.2. Cadastrar usuário
+
+**Método:** POST
+
+**Endpoint:** `/api/usuarios`
+
+Permite cadastrar usuários mediante autorização de administrador.
+
+As senhas são armazenadas utilizando hash bcrypt. O sistema também oferece compatibilidade com hashes Werkzeug existentes.
+
+#### 3.3. Consultar sintomas
+
+**Método:** GET
+
+**Endpoints:**
+
+- `/api/sintomas?sexo=masculino`
+- `/api/sintomas?sexo=feminino`
+
+Retorna os sintomas aplicáveis ao checklist conforme o sexo informado.
+
+Na configuração de sintomas utilizada durante os testes, o checklist masculino possui 12 sintomas e o feminino, 11. Esses totais dependem dos registros ativos no banco.
+
+#### 3.4. Cadastrar paciente
+
+**Método:** POST
+
+**Endpoint:** `/api/pacientes`
+
+Cadastra um paciente vinculado ao usuário autenticado.
+
+Exemplo:
+
+```json
 {
   "nome": "Paciente Teste",
   "data_nascimento": "2015-05-20",
   "sexo": "masculino"
 }
-Quando o cadastro é realizado, a API retorna HTTP 201 e os dados do paciente, incluindo seu ID.
-3.3. Listar pacientes
-Método: GET
-Endpoint: /api/pacientes
+```
 
-Retorna a lista de pacientes cadastrados no banco.
-3.4. Consultar paciente por ID
-Método: GET
-Endpoint: /api/pacientes/1
+Quando o cadastro é realizado com sucesso, o servidor retorna HTTP 201.
 
-Consulta os dados de um paciente específico. Se o ID não existir, retorna HTTP 404.
-3.5. Atualizar paciente
-Método: PATCH
-Endpoint: /api/pacientes/1
+#### 3.5. Listar pacientes
 
-Atualiza apenas os campos informados, sem exigir o envio de todos os dados do paciente.
+**Método:** GET
+
+**Endpoint:** `/api/pacientes`
+
+Permite consultar os pacientes associados ao usuário autenticado.
+
+#### 3.6. Consultar paciente por ID
+
+**Método:** GET
+
+**Endpoint:** `/api/pacientes/1`
+
+Consulta os dados de um paciente específico, respeitando as regras de acesso.
+
+Quando o paciente não existe ou não está acessível ao usuário, a API pode retornar HTTP 404.
+
+#### 3.7. Atualizar paciente
+
+**Método:** PATCH
+
+**Endpoint:** `/api/pacientes/1`
+
+Atualiza os campos permitidos de um paciente.
 
 Exemplo:
+
+```json
 {
   "nome": "Paciente Teste Atualizado"
 }
-Os campos permitidos são nome, data_nascimento e sexo. A atualização bem-sucedida retorna HTTP 200.
-3.6. Excluir paciente
-Método: DELETE
-Endpoint: /api/pacientes/2
+```
 
-Exclui um paciente sem avaliações vinculadas. Caso haja avaliações relacionadas, a operação é bloqueada e retorna HTTP 409. A exclusão foi testada com um cadastro fictício criado especificamente para essa finalidade.
-3.7. Criar avaliação
-Método: POST
-Endpoint: /api/avaliacoes
+Os campos documentados são nome, data de nascimento e sexo.
 
-Cria uma avaliação vinculada a um paciente existente.
+#### 3.8. Excluir paciente
+
+**Método:** DELETE
+
+**Endpoint:** `/api/pacientes/2`
+
+Permite excluir um paciente conforme as regras do sistema.
+
+A exclusão de pacientes com avaliações vinculadas é bloqueada, retornando HTTP 409.
+
+#### 3.9. Criar avaliação
+
+**Método:** POST
+
+**Endpoint:** `/api/avaliacoes`
+
+Cria uma avaliação vinculada a um paciente pertencente ao usuário autenticado.
+
+```json
 {
   "paciente_id": 1
 }
-Após o cadastro, a avaliação recebe um ID próprio, usado para registrar as respostas do checklist.
-3.8. Registrar respostas de uma avaliação
-Método: POST
-Endpoint: /api/avaliacoes/1/respostas
+```
 
-Recebe as respostas para os sintomas de determinada avaliação.
+A avaliação recebe um identificador próprio para registrar as respostas.
 
-Exemplo simplificado:
+#### 3.10. Registrar respostas
+
+**Método:** POST
+
+**Endpoint:** `/api/avaliacoes/1/respostas`
+
+Recebe as respostas dos sintomas vinculados à avaliação.
+
+Exemplo simplificado de formato:
+
+```json
 {
   "respostas": [
-    {"sintoma_id": 1, "presente": true},
-    {"sintoma_id": 2, "presente": false}
+    {
+      "sintoma_id": 1,
+      "presente": true
+    },
+    {
+      "sintoma_id": 2,
+      "presente": false
+    }
   ]
 }
-O campo presente indica se o sintoma foi marcado como presente (true) ou ausente (false). O exemplo contém apenas duas respostas para mostrar o formato: na requisição real de teste, é necessário enviar todos os sintomas aplicáveis ao checklist do paciente.
+```
 
-A API verifica IDs inválidos, respostas duplicadas e tentativas de preencher uma avaliação que já possui respostas. Nesse último caso, retorna HTTP 409.
-3.9. Consultar respostas de uma avaliação
-Método: GET
-Endpoint: /api/avaliacoes/1/respostas
+**Atenção:** o exemplo mostra somente o formato. O backend exige uma resposta para cada sintoma aplicável ao paciente.
 
-Recupera as respostas salvas, incluindo o ID e a descrição de cada sintoma e a indicação de presença ou ausência. Essas informações poderão ser utilizadas pelo frontend para apresentar um checklist já preenchido.
-3.10. Consultar resumo da avaliação
-Método: GET
-Endpoint: /api/avaliacoes/1/resumo
+O endpoint verifica:
 
-Retorna um resumo descritivo com:
-- Total de sintomas respondidos.
-- Quantidade de sintomas marcados como presentes.
-- Quantidade de sintomas marcados como ausentes.
-Nos testes com dados fictícios, uma avaliação apresentou 12 sintomas respondidos: 5 presentes e 7 ausentes.
+- Ausência de autenticação.
+- JSON inválido.
+- Checklist incompleto.
+- Sintomas inválidos.
+- Identificadores duplicados.
+- Valores de presença diferentes de verdadeiro ou falso.
+- Avaliações que já possuem respostas.
 
-Atenção: esse resumo não representa diagnóstico nem classificação clínica de risco. Os critérios de pontuação clínica ainda precisam ser definidos e validados.
-4. Códigos de resposta HTTP
-Código	Significado
-200	Requisição realizada com sucesso
-201	Registro criado com sucesso
-400	Dados enviados incorretamente
-404	Registro não encontrado
-409	Conflito com uma regra da operação
-500	Erro interno durante o processamento
+Uma avaliação já respondida retorna HTTP 409.
 
+Quando todas as validações são atendidas, o sistema salva as respostas e calcula uma pontuação ponderada experimental, que é armazenada na avaliação.
 
-Esses códigos ajudam o frontend a identificar resultados e apresentar mensagens adequadas ao usuário.
-5. Integração com o frontend
-O frontend será desenvolvido em HTML, CSS e JavaScript e se comunicará com o Flask por meio de requisições HTTP. Nas requisições com corpo JSON, deve ser utilizado o cabeçalho:
+Essa pontuação não possui finalidade diagnóstica.
 
-Content-Type: application/json
+#### 3.11. Consultar respostas
 
-O fluxo previsto para uma avaliação é:
-1. Cadastrar ou selecionar um paciente.
-2. Consultar os sintomas correspondentes ao checklist.
-3. Criar uma avaliação vinculada ao paciente.
-4. Enviar as respostas selecionadas.
-5. Consultar as respostas e o resumo da avaliação.
-As telas ficarão responsáveis pela interação com o usuário; o backend, pelas validações, pelo processamento e pelo acesso ao banco. A integração completa entre frontend e backend ainda está pendente.
-6. Segurança e cuidados com os dados
-Como o sistema lida com informações relacionadas à saúde, a proteção dos dados dos pacientes exige atenção especial.
+**Método:** GET
 
-Já existem validações de entrada e verificações em operações no banco, como o bloqueio da exclusão de pacientes com avaliações cadastradas. Entretanto, a API ainda não possui autenticação e autorização de usuários.
+**Endpoint:** `/api/avaliacoes/1/respostas`
 
-Por isso, os testes devem continuar restritos ao ambiente local e a dados fictícios. Antes de utilizar dados reais ou disponibilizar a aplicação, será necessário implementar controle de acesso e revisar o tratamento das informações pessoais, considerando as exigências aplicáveis da LGPD.
-7. Funcionalidades pendentes
-- Implementar cadastro de usuários e autenticação.
-- Definir permissões de acesso aos dados dos pacientes.
-- Validar as regras clínicas de pontuação e classificação.
-- Integrar o backend às telas desenvolvidas pela equipe.
-- Realizar testes automatizados e de segurança.
-- Revisar o fluxo completo do sistema antes da entrega.
-8. Considerações finais
-A estrutura atual do backend permite cadastrar, consultar, atualizar e excluir pacientes, além de criar avaliações, registrar respostas e consultar seus resumos.
+Retorna as respostas registradas, incluindo identificador do sintoma, descrição e indicação de presença ou ausência.
 
-Essas operações foram testadas localmente com Flask, SQLAlchemy e MySQL. As próximas atividades serão voltadas à integração com o frontend, à implementação de mecanismos de segurança e às funcionalidades necessárias para a conclusão do projeto.
+O acesso é restrito às avaliações dos pacientes associados ao usuário autenticado.
+
+#### 3.12. Consultar resumo
+
+**Método:** GET
+
+**Endpoint:** `/api/avaliacoes/1/resumo`
+
+Retorna o resumo descritivo da avaliação, com a quantidade de sintomas respondidos, presentes e ausentes.
+
+Uma avaliação sem respostas retorna HTTP 409.
+
+O resumo serve para apresentar os resultados registrados, não constituindo um diagnóstico clínico.
+
+#### 3.13. Consultar histórico de avaliações
+
+**Método:** GET
+
+**Endpoint:** `/api/pacientes/1/avaliacoes`
+
+Retorna as avaliações cadastradas para determinado paciente, respeitando as permissões do usuário.
+
+O histórico permite identificar avaliações pendentes e concluídas.
+
+### 4. Códigos de resposta HTTP
+
+| Código | Significado |
+|---|---|
+| 200 | Requisição realizada com sucesso |
+| 201 | Registro criado com sucesso |
+| 400 | Dados incorretos ou inválidos |
+| 401 | Usuário não autenticado |
+| 403 | Acesso negado ou token CSRF inválido |
+| 404 | Registro não encontrado ou indisponível ao usuário |
+| 409 | Conflito com uma regra da operação |
+| 429 | Limite de requisições excedido |
+| 500 | Erro interno durante o processamento |
+
+Esses códigos ajudam o frontend a apresentar mensagens adequadas para o usuário.
+
+### 5. Integração com o frontend
+
+A interface utiliza HTML, CSS e JavaScript para enviar requisições à API Flask.
+
+Nas operações que enviam JSON, deve ser utilizado o cabeçalho:
+
+`Content-Type: application/json`
+
+Para operações protegidas, o frontend também deve enviar o token CSRF no cabeçalho:
+
+`X-CSRF-Token: <token>`
+
+O navegador deve manter o cookie de sessão nas chamadas autenticadas.
+
+O fluxo previsto é:
+
+1. Solicitar um token CSRF.
+2. Efetuar login.
+3. Solicitar um novo token CSRF após a autenticação.
+4. Cadastrar ou selecionar um paciente.
+5. Consultar os sintomas correspondentes ao checklist.
+6. Criar uma avaliação.
+7. Registrar as respostas.
+8. Consultar o resumo e o histórico.
+
+A integração completa com as telas permanece como etapa de validação.
+
+### 6. Segurança e proteção dos dados
+
+O backend possui mecanismos de segurança implementados para reduzir riscos de acesso indevido e requisições inválidas.
+
+Entre eles:
+
+- Autenticação de usuários.
+- Sessões de acesso.
+- Diferenciação entre administrador e profissional.
+- Verificação de propriedade dos pacientes.
+- Hash de senhas.
+- Proteção CSRF.
+- Limitação de tentativas de login.
+- Validação dos dados enviados.
+- Configuração de credenciais por variáveis de ambiente.
+
+Como o sistema trata informações relacionadas à saúde, essas medidas não dispensam uma revisão de segurança e privacidade.
+
+A utilização de dados reais exige uma análise adicional de conformidade com a LGPD, medidas de proteção adequadas e avaliação dos requisitos aplicáveis.
+
+### 7. Testes realizados
+
+O projeto utiliza pytest para automatizar verificações do backend.
+
+Entre os cenários testados estão:
+
+- Acesso sem autenticação.
+- Restrições de acesso entre usuários.
+- Permissões de administrador.
+- Verificação de senhas.
+- Validação de dados de avaliações.
+- Validação e consulta das respostas.
+- Cálculos de pontuação.
+- Tratamento de avaliações incompletas ou já respondidas.
+- Rejeição de login sem token CSRF.
+
+A última execução completa registrada apresentou 38 testes aprovados. Um teste adicional de proteção CSRF foi aprovado individualmente, totalizando 39 cenários aprovados até o momento.
+
+### 8. Funcionalidades pendentes
+
+- Concluir a integração com o frontend.
+- Validar o fluxo completo de autenticação, cadastro, avaliação e resumo.
+- Confirmar o funcionamento de cookies e tokens CSRF no navegador.
+- Verificar o comportamento das gravações e operações de rollback em testes isolados.
+- Revisar a documentação e preparar a demonstração final.
+- Submeter qualquer uso clínico da pontuação a validação especializada.
+
+### 9. Considerações finais
+
+O backend do Sistema de Triagem da Síndrome do X Frágil já possui recursos de autenticação, controle de permissões, gerenciamento de pacientes, avaliações, respostas, cálculo de pontuação experimental e consulta de históricos.
+
+A aplicação foi organizada em módulos para facilitar seu desenvolvimento e manutenção.
+
+Os testes automatizados apresentam resultados positivos, mas ainda será necessária a verificação completa da integração entre frontend, backend e banco de dados.
+
+O projeto tem finalidade acadêmica e seus resultados não devem ser interpretados como diagnóstico médico.

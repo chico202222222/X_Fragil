@@ -1,5 +1,6 @@
-
+#configuacao do interpretador
 import sys
+#configura caminho
 from pathlib import Path
 
 SISTEMA_DIR = Path(__file__).resolve().parent.parent
@@ -31,9 +32,7 @@ def popular_sintomas():
         adicionados = 0
 
         for descricao, sexo in SINTOMAS:
-            existente = Sintoma.query.filter_by(
-                descricao=descricao
-            ).first()
+            existente = Sintoma.query.filter_by(descricao=descricao).first()
 
             if existente is None:
                 sintoma = Sintoma(
