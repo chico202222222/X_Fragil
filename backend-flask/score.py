@@ -1,4 +1,6 @@
-def calcular_resumo(respostas):
+import json
+
+def calcular_resumo(respostas) -> json:
 
 
     total = len(respostas)
@@ -10,8 +12,8 @@ def calcular_resumo(respostas):
 
     ausentes = total - presentes
 
-    return{
+    return json.dumps({
         "total_sintomas":total,
         "sintomas_presentes":presentes,
         "sintomas_ausentes":ausentes
-    }
+    })

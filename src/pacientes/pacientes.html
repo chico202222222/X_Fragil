@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacientes | X Fragil</title>
+    <link rel="stylesheet" href="../global.css" />
+    <link rel="stylesheet" href="../home/style.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <aside class="sidebar">
+        <h1>X Fragil</h1>
+        <nav aria-label="Menu principal">
+          <a href="#" class="wip" aria-disabled="true" tabindex="-1">Dashboard <span class="wip-tag">wip</span></a>
+          <a href="../pacientes/pacientes.html" aria-current="page">Pacientes</a>
+          <a href="#" class="wip" aria-disabled="true" tabindex="-1">Avaliações <span class="wip-tag">wip</span></a>
+          <a href="../home/home.html">Relatórios</a>
+        </nav>
+        <a class="logout" href="#" onclick="limparSessao(event)">Sair</a>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <h2>Pacientes</h2>
+            <p>Consulte os pacientes cadastrados</p>
+          </div>
+          <p id="nome-usuario"></p>
+        </header>
+        <section class="report-card">
+          <p>Nenhum paciente carregado ainda.</p>
+        </section>
+      </section>
+    </main>
+    <script src="../js/session.js"></script>
+  </body>
+</html>

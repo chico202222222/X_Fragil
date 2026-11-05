@@ -1,38 +1,143 @@
-.main_card{
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    box-sizing: border-box;
+* {
+  box-sizing: border-box;
 }
 
-.main_card input{
-    width: 80%;
-    height: 40px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    padding: 0 10px;
-    box-sizing: border-box;
+body {
+  background-color: #edf4f8;
+  color: #17394e;
 }
 
-.main_card button{
-    width: 80%;
-    height: 40px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    padding: 0 10px;
-    box-sizing: border-box;
+.content {
+  padding: 37px 34px;
 }
 
-.card_avaliacao {
-    align-items: grid; 
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    box-sizing: border-box;
+.topbar {
+  max-width: 886px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.topbar h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.topbar p {
+  margin: 4px 0 0;
+  color: #667486;
+  font-size: 13px;
+}
+
+.report-card {
+  max-width: 886px;
+  min-height: 476px;
+  padding: 20px 25px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid #908c8c;
+}
+
+.report-card h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.filters {
+  margin-bottom: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 24px;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  color: #222;
+  font-size: 13px;
+}
+
+.filters input,
+.filters select {
+  height: 39px;
+  padding: 0 8px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  background-color: white;
+  font: inherit;
+}
+
+.filters select {
+  border: 2px solid #20a7e5;
+}
+
+.filter-actions {
+  grid-column: 2 / 4;
+  display: flex;
+  justify-content: flex-end;
+  gap: 11px;
+}
+
+button {
+  min-width: 126px;
+  height: 39px;
+  padding: 0 18px;
+  border-radius: 7px;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.button-secondary {
+  border: 1px solid #555;
+  background-color: white;
+}
+
+.button-primary {
+  border: 0;
+  background-color: #148ba0;
+  color: white;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 580px;
+  border-collapse: collapse;
+  color: #667486;
+  font-size: 13px;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 5px 6px;
+  font-weight: normal;
+}
+
+.report-actions {
+  margin-top: 29px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 11px;
+}
+/* 
+@media é uma regra de midia que deixa a gente definir estilos diferentes dependendo do tamanho da tela.
+No caso abaixo, estamos definindo estilos diferentes para telas com largura máxima de 760px (celulares e tablets ate certo ponto kk).
+*/
+@media (max-width: 760px) {
+  .content {
+    padding: 25px 15px;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    grid-column: 1;
+  }
 }

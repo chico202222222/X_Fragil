@@ -126,14 +126,15 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
+    margin-left: 10px;
+    height: 80vh;
     width: 220px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     padding: 20px;
     box-sizing: border-box;
-    background-color: #1a7baf;
+    background-color: #23a7b6;
     border-right: 1px solid #ccc;
 }
 
@@ -157,3 +158,98 @@ body {
 /* o a:hover é para quando o mouse passar sobre o link, 
 o background-color muda para #3ac3b5 e o color para white 
 e a transição é de 0.3s e o cursor muda para pointer (mao clicando) */
+
+/* Layout do app: sidebar fixa à esquerda + conteúdo */
+.dashboard {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 28px 16px;
+    display: flex;
+    flex-direction: column;
+    background-color: #173f59;
+}
+
+.sidebar h1 {
+    margin: 0 8px 32px;
+    color: white;
+    font-size: 21px;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar a {
+    padding: 10px 12px;
+    border-radius: 7px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.sidebar a:hover,
+.sidebar a:focus-visible {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    outline: none;
+}
+
+.sidebar a[aria-current="page"] {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: white;
+    font-weight: 600;
+}
+
+.sidebar a.wip {
+    color: rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+    cursor: default;
+}
+
+.sidebar a.wip:hover {
+    background-color: transparent;
+}
+
+.wip-tag {
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.12);
+    font-size: 11px;
+}
+
+.sidebar .logout {
+    margin-top: auto;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
+}
+
+@media (max-width: 760px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+        height: auto;
+        padding: 16px;
+    }
+
+    .sidebar nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .sidebar .logout {
+        margin-top: 16px;
+    }
+}

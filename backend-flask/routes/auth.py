@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request,session
 from werkzeug.security import check_password_hash
 from models.usuario import Usuario
+from auth_utils import login_required
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -43,6 +44,12 @@ def login():
             "email":usuario.email
         }
     }), 200
+
+@auth_bp.route("/api/sessao", methods=["GET"])
+@login_required
+def sessao():
+    usuario = Usuario.query.filter_by(id=session["usuario_id"]).first()
+    return jsonify({"usuario": {"nome": usuario.nome}}), 200
 
 
 @auth_bp.route("/api/logout", methods=["POST"])

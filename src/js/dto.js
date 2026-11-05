@@ -1,6 +1,13 @@
 import prisma from '../prisma/prisma.js';
-// puxa a info da database (wip, sem database)
+
+
+
 class DTO {
+  static async findPaciente(data){
+    return prisma.paciente.findUnique({
+      where: { id: data.id },
+    });
+  }
   static async createUser(data) {
     return prisma.user.create({
       data: {

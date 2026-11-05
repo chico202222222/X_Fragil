@@ -17,7 +17,7 @@ from routes.respostas import respostas_bp
 from routes.usuarios import usuarios_bp
 from routes.auth import auth_bp
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../src", static_url_path="")
 
 #carregando as configuracoes do mysql
 
@@ -37,8 +37,7 @@ app.register_blueprint(auth_bp)
 
 @app.route("/")
 def inicio():
-    return {"Sistema de Triagem da Sindrome do X fragil"
-    }
+    return app.send_static_file("login/login.html")
 
 
 @app.route("/api/teste-banco")

@@ -6,8 +6,32 @@ from models.paciente import Paciente
 from models.avaliacao import Avaliacao
 from models.resposta import Resposta
 from score import calcular_resumo
+from auth_utils import login_required
 
 avaliacoes_bp = Blueprint("avaliacoes", __name__)
+
+@avaliacoes_bp.route("/api/avaliacoes", methods=["GET"])
+@login_required
+def listar_avaliacoes():
+    avaliacoes = Avaliacao.query.order_by(
+        Avaliacao.data_avaliacao.desc()
+    ).all()
+
+    resultado = [
+        {
+            "id": avaliacao.id,
+            "paciente": avaliacao.paciente.nome,
+            "data_avaliacao": avaliacao.data_avaliacao.isoformat(),
+            "pontuacao": avaliacao.pontuacao,
+            "resultado": avaliacao.resultado
+        }
+        for avaliacao in avaliacoes
+    ]
+
+    return jsonify({
+        "total": len(resultado),
+        "avaliacoes": resultado
+    }), 200
 
 @avaliacoes_bp.route("/api/avaliacoes", methods=["POST"])
 def criar_avaliacao():
