@@ -1,3 +1,5 @@
+import { login, sessao } from './dto.js';
+
 function validateLogin(form) {
   const email = form.email.value;
   const senha = form.senha.value;
@@ -16,23 +18,14 @@ function validateLogin(form) {
 const form = document.getElementById('login-form');
 const erro = document.getElementById('msgerro');
 
-async function enviarLogin(credentials) {
-  const res = await fetch('/api/login', {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(credentials),
-  });
-
-  const body = await res.json().catch(() => ({}));
-  return { ok: res.ok, status: res.status, body };
-}
-// res = response
-fetch('/api/sessao', { credentials: 'include' }).then((res) => {
-  if (res.ok) {
+// se ja esta logado vai direto pra home
+sessao()
+  .then(() => {
     window.location.href = '../home/home.html';
-  }
-});
+  })
+  .catch(() => {
+    // 401 aqui e normal, so continua na tela de login
+  });
 
 form.addEventListener('submit', async (event) => { // o event é o evento que foi disparado pelo formulário
   event.preventDefault();
@@ -45,24 +38,18 @@ form.addEventListener('submit', async (event) => { // o event é o evento que fo
   }
 
   try {
-    const result = await enviarLogin(validacao.data);
-
-    if (result.status === 401) {
-      erro.textContent = 'Usuário ou senha inválidos';
-      return;
-    }
-
-    if (!result.ok) {
-      if (result.body.error) {
-        erro.textContent = result.body.error;
-      } else {
-        erro.textContent = 'Não foi possível conectar ao servidor';
-      }
-      return;
-    }
+    await login(validacao.data.email, validacao.data.senha);
     window.location.href = '../home/home.html';
   } catch (error) {
-    erro.textContent = 'Não foi possível conectar ao servidor';
-    console.error(error);
+    if (error.status === 401) {
+      erro.textContent = 'Usuário ou senha inválidos';
+    } else if (error.status === 429) {
+      erro.textContent = 'Muitas tentativas, espere um minuto';
+    } else if (error.status) {
+      erro.textContent = error.message;
+    } else {
+      erro.textContent = 'Não foi possível conectar ao servidor';
+      console.error(error);
+    }
   }
 });

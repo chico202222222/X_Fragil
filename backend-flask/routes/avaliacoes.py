@@ -1,3 +1,4 @@
+from auth_utils import login_required
 from flask import Blueprint, jsonify, request
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -6,20 +7,26 @@ from models.paciente import Paciente
 from models.avaliacao import Avaliacao
 from models.resposta import Resposta
 from score import calcular_resumo
-from auth_utils import login_required
+from flask import session
 
 avaliacoes_bp = Blueprint("avaliacoes", __name__)
 
 @avaliacoes_bp.route("/api/avaliacoes", methods=["GET"])
 @login_required
 def listar_avaliacoes():
-    avaliacoes = Avaliacao.query.order_by(
-        Avaliacao.data_avaliacao.desc()
-    ).all()
+    # Somente avaliações de pacientes do usuário logado.
+    avaliacoes = (
+        Avaliacao.query
+        .join(Paciente, Avaliacao.paciente_id == Paciente.id)
+        .filter(Paciente.usuario_id == session["usuario_id"])
+        .order_by(Avaliacao.data_avaliacao.desc(), Avaliacao.id.desc())
+        .all()
+    )
 
     resultado = [
         {
             "id": avaliacao.id,
+            "paciente_id": avaliacao.paciente_id,
             "paciente": avaliacao.paciente.nome,
             "data_avaliacao": avaliacao.data_avaliacao.isoformat(),
             "pontuacao": avaliacao.pontuacao,
@@ -34,6 +41,7 @@ def listar_avaliacoes():
     }), 200
 
 @avaliacoes_bp.route("/api/avaliacoes", methods=["POST"])
+@login_required
 def criar_avaliacao():
 
     dados= request.get_json(silent=True)
@@ -50,7 +58,10 @@ def criar_avaliacao():
             "erro": "Informe um paciente_id inteiro positivo."
         }), 400
 
-    paciente = db.session.get(Paciente,paciente_id)
+    paciente = Paciente.query.filter_by(
+        id=paciente_id,
+        usuario_id=session["usuario_id"]).first()
+
 
     if paciente is None:
         return jsonify({
@@ -88,9 +99,18 @@ def criar_avaliacao():
     methods=["GET"]
 )
 
+@login_required
 def consultar_resumo(avaliacao_id):
 
-    avaliacao = db.session.get(Avaliacao, avaliacao_id)
+    avaliacao = (
+        Avaliacao.query
+        .join(Paciente, Avaliacao.paciente_id == Paciente.id)
+        .filter(
+            Avaliacao.id == avaliacao_id,
+            Paciente.usuario_id == session["usuario_id"]
+        )
+        .first()
+    )
 
     if avaliacao is None:
         return jsonify({
@@ -114,4 +134,52 @@ def consultar_resumo(avaliacao_id):
         "paciente_id": avaliacao.paciente_id,
         "resumo":resumo,
         "aviso":"Resumo descritivo , nao representa diagnostivo ou classificacao de risco."
+    }), 200
+
+@avaliacoes_bp.route("/api/pacientes/<int:paciente_id>/avaliacoes",methods=["GET"])
+@login_required
+def historico_avaliacoes(paciente_id):
+
+    #vefifica se paciente pertence ao profissional
+    paciente = Paciente.query.filter_by(
+        id=paciente_id,
+        usuario_id=session["usuario_id"]
+    ).first()
+
+    if paciente is None:
+        return jsonify({
+            "erro":"Paciente nao encontrado."
+        }), 404
+
+    #busca as avaliacoes recentes primeiro
+    avaliacoes = (
+        Avaliacao.query
+        .filter_by(paciente_id=paciente_id)
+        .order_by(Avaliacao.data_avaliacao.desc(), Avaliacao.id.desc())
+        .all()
+    )
+
+    historico = []
+
+    for avaliacao in avaliacoes:
+        historico.append({
+            "id":avaliacao.id,
+            "paciente_id":avaliacao.paciente_id,
+            "data_avaliacao": (
+                avaliacao.data_avaliacao.isoformat()
+                if avaliacao.data_avaliacao else None
+            ),
+            "pontuacao": avaliacao.pontuacao,
+            "resultado": avaliacao.resultado,
+            "status": (
+                "concluida"
+                if avaliacao.pontuacao is not None
+                else "pendente"
+            )
+        })
+
+    return jsonify({
+        "paciente_id": paciente_id,
+        "total": len(historico),
+        "avaliacoes": historico
     }), 200

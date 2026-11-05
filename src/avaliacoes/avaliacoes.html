@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Avaliações | X Fragil</title>
+    <link rel="stylesheet" href="../global.css" />
+    <link rel="stylesheet" href="../home/style.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <aside class="sidebar">
+        <h1>X Fragil</h1>
+        <nav aria-label="Menu principal">
+          <a href="#" class="wip" aria-disabled="true" tabindex="-1">Dashboard <span class="wip-tag">wip</span></a>
+          <a href="../pacientes/pacientes.html">Pacientes</a>
+          <a href="../avaliacoes/avaliacoes.html" aria-current="page">Avaliações</a>
+          <a href="../home/home.html">Relatórios</a>
+        </nav>
+        <a class="logout" href="#">Sair</a>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <h2>Avaliações</h2>
+            <p>Responda o checklist de sintomas do paciente</p>
+          </div>
+          <p id="nome-usuario"></p>
+        </header>
+
+        <section class="report-card">
+          <h3>Nova avaliação</h3>
+          <form class="filters" id="form-avaliacao">
+            <label
+              >Paciente<select id="paciente">
+                <option value="" selected>Selecionar</option>
+              </select></label
+            >
+
+            <div id="lista-sintomas" class="lista-sintomas"></div>
+
+            <div class="filter-actions">
+              <button id="salvar" class="button-primary" type="submit" hidden>
+                Salvar avaliação
+              </button>
+            </div>
+          </form>
+
+          <p id="mensagem" role="alert"></p>
+
+          <div id="resultado" class="resultado-box" hidden>
+            <h3>Resultado</h3>
+            <p id="resultado-score"></p>
+            <p id="resultado-resumo"></p>
+            <p id="resultado-aviso"></p>
+          </div>
+
+          <h3>Histórico do paciente</h3>
+          <div class="table-wrap">
+            <table class="tabela-larga">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="historico-body">
+                <tr>
+                  <td colspan="3">Selecione um paciente.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script type="module" src="../js/session.js"></script>
+    <script type="module" src="avaliacoes.js"></script>
+  </body>
+</html>

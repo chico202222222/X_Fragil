@@ -14,10 +14,10 @@
         <nav aria-label="Menu principal">
           <a href="#" class="wip" aria-disabled="true" tabindex="-1">Dashboard <span class="wip-tag">wip</span></a>
           <a href="../pacientes/pacientes.html">Pacientes</a>
-          <a href="#" class="wip" aria-disabled="true" tabindex="-1">Avaliações <span class="wip-tag">wip</span></a>
+          <a href="../avaliacoes/avaliacoes.html">Avaliações</a>
           <a href="../home/home.html" aria-current="page">Relatórios</a>
         </nav>
-        <a class="logout" href="#" onclick="limparSessao(event)">Sair</a>
+        <a class="logout" href="#">Sair</a>
       </aside>
 
       <section class="content">
@@ -34,21 +34,21 @@
           <h3>Filtros de pesquisa</h3>
           <form class="filters">
             <label
-              >Data inicial<input type="text" placeholder="DD/MM/AAAA"
+              >Data inicial<input id="data-inicial" type="text" placeholder="DD/MM/AAAA"
             /></label>
             <label
-              >Data final<input type="text" placeholder="DD/MM/AAAA"
+              >Data final<input id="data-final" type="text" placeholder="DD/MM/AAAA"
             /></label>
             <label
-              >Usuário<select>
-                <option selected disabled>Selecionar</option>
+              >Paciente<select id="filtro-paciente">
+                <option value="" selected>Todos</option>
               </select></label
             >
             <div class="filter-actions">
               <button class="button-secondary" type="reset">
                 Limpar filtros
               </button>
-              <button class="button-primary" type="button">Filtrar</button>
+              <button id="filtrar" class="button-primary" type="button">Filtrar</button>
             </div>
           </form>
 
@@ -77,20 +77,18 @@
               id="exportar-pdf"
               class="button-secondary"
               type="button"
-              onClick="exportToPDF()"
             >
               Exportar PDF
             </button>
-            <button class="button-primary" type="button">
+            <button id="imprimir" class="button-primary" type="button">
               Imprimir relatório
             </button>
           </div>
         </section>
       </section>
     </main>
-    <script src="../js/session.js"></script>
     <script src="../node_modules/jspdf/dist/jspdf.umd.min.js"></script>
-    <script src="../js/pdf-export.js"></script>
-    <script src="home.js"></script>
+    <script type="module" src="../js/session.js"></script>
+    <script type="module" src="home.js"></script>
   </body>
 </html>

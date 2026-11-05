@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify, request
 from models.sintoma import Sintoma
+from auth_utils import login_required
 
 sintomas_bp = Blueprint("sintomas", __name__)
 
 @sintomas_bp.route("/api/sintomas", methods=["GET"])
+@login_required
 def listar_sintomas():
     sexo = request.args.get("sexo", "").strip().lower()
 

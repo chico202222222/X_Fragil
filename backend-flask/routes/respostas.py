@@ -1,5 +1,6 @@
+from auth_utils import login_required
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session
 from sqlalchemy.exc import SQLAlchemyError
 
 from database import db
@@ -7,6 +8,7 @@ from models.avaliacao import Avaliacao
 from models.paciente import Paciente
 from models.sintoma import Sintoma
 from models.resposta import Resposta
+from score import calcular_resumo,calcular_score
 
 
 respostas_bp = Blueprint("respostas", __name__)
@@ -16,6 +18,7 @@ respostas_bp = Blueprint("respostas", __name__)
     "/api/avaliacoes/<int:avaliacao_id>/respostas",
     methods=["POST"]
 )
+@login_required
 def registrar_respostas(avaliacao_id):
     dados = request.get_json(silent=True)
 
@@ -27,7 +30,15 @@ def registrar_respostas(avaliacao_id):
     if not isinstance(respostas, list):
         return jsonify({"erro": "Informe uma lista de respostas."}), 400
 
-    avaliacao = db.session.get(Avaliacao, avaliacao_id)
+    avaliacao = (
+        Avaliacao.query
+        .join(Paciente, Avaliacao.paciente_id == Paciente.id)
+        .filter(
+            Avaliacao.id == avaliacao_id,
+            Paciente.usuario_id == session["usuario_id"]
+            )
+            .first()
+    )
 
     if avaliacao is None:
         return jsonify({"erro": "Avaliacao nao encontrada."}), 404
@@ -84,7 +95,9 @@ def registrar_respostas(avaliacao_id):
             "erro": "Esta avaliacao ja possui respostas."
         }), 409
 
+
     try:
+        # Salva as respostas no banco
         for resposta in respostas:
             nova_resposta = Resposta(
                 avaliacao_id=avaliacao_id,
@@ -93,9 +106,32 @@ def registrar_respostas(avaliacao_id):
             )
             db.session.add(nova_resposta)
 
+        # Envia as respostas para a sessao,
+        # sem confirmar a transacao ainda
+        db.session.flush()
+
+        # Recupera as respostas salvas nesta avaliacao
+        respostas_salvas = Resposta.query.filter_by(
+            avaliacao_id=avaliacao_id
+        ).all()
+
+        # Calcula o resumo descritivo
+        resumo = calcular_resumo(respostas_salvas)
+
+        # Calcula o score conforme o sexo do paciente
+        score = calcular_score(
+            respostas_salvas,
+            paciente.sexo
+        )
+
+        # Atualiza a avaliacao
+        avaliacao.pontuacao = score
+        avaliacao.resultado = "Score ponderado"
+
+        # Salva respostas e avaliacao juntas
         db.session.commit()
 
-    except SQLAlchemyError:
+    except (SQLAlchemyError,ValueError):
         db.session.rollback()
         return jsonify({
             "erro": "Nao foi possivel salvar as respostas."
@@ -104,8 +140,12 @@ def registrar_respostas(avaliacao_id):
     return jsonify({
         "mensagem": "Respostas registradas com sucesso.",
         "avaliacao_id": avaliacao_id,
-        "total_respostas": len(respostas)
+        "total_respostas": len(respostas),
+        "score":score,
+        "resumo": resumo,
+        "aviso": "Score experimental. Este resumo nao representa diagnostico clinico."
     }), 201
+
 
 
 @respostas_bp.route(
@@ -113,9 +153,18 @@ def registrar_respostas(avaliacao_id):
     methods=["GET"]
 
 )
+@login_required
 def listar_respostas(avaliacao_id):
 
-    avaliacao = db.session.get(Avaliacao, avaliacao_id)
+    avaliacao = (
+        Avaliacao.query
+        .join(Paciente, Avaliacao.paciente_id == Paciente.id)
+        .filter(
+            Avaliacao.id == avaliacao_id,
+            Paciente.usuario_id == session["usuario_id"]
+        )
+        .first()
+    )
 
     if avaliacao is None:
         return jsonify({

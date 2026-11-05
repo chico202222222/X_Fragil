@@ -14,25 +14,69 @@
         <nav aria-label="Menu principal">
           <a href="#" class="wip" aria-disabled="true" tabindex="-1">Dashboard <span class="wip-tag">wip</span></a>
           <a href="../pacientes/pacientes.html" aria-current="page">Pacientes</a>
-          <a href="#" class="wip" aria-disabled="true" tabindex="-1">Avaliações <span class="wip-tag">wip</span></a>
+          <a href="../avaliacoes/avaliacoes.html">Avaliações</a>
           <a href="../home/home.html">Relatórios</a>
         </nav>
-        <a class="logout" href="#" onclick="limparSessao(event)">Sair</a>
+        <a class="logout" href="#">Sair</a>
       </aside>
 
       <section class="content">
         <header class="topbar">
           <div>
             <h2>Pacientes</h2>
-            <p>Consulte os pacientes cadastrados</p>
+            <p>Cadastre e consulte os pacientes</p>
           </div>
           <p id="nome-usuario"></p>
         </header>
+
         <section class="report-card">
-          <p>Nenhum paciente carregado ainda.</p>
+          <h3 id="titulo-form">Cadastrar paciente</h3>
+          <form class="filters" id="form-paciente">
+            <label
+              >Nome<input id="nome" type="text" maxlength="120" required
+            /></label>
+            <label
+              >Data de nascimento<input id="nascimento" type="date" required
+            /></label>
+            <label
+              >Sexo<select id="sexo" required>
+                <option value="" selected disabled>Selecionar</option>
+                <option value="masculino">Masculino</option>
+                <option value="feminino">Feminino</option>
+              </select></label
+            >
+            <div class="filter-actions">
+              <button id="cancelar" class="button-secondary" type="button" hidden>
+                Cancelar edição
+              </button>
+              <button class="button-primary" type="submit">Salvar</button>
+            </div>
+          </form>
+
+          <p id="mensagem" role="alert"></p>
+
+          <h3>Pacientes cadastrados</h3>
+          <div class="table-wrap">
+            <table class="tabela-larga">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Nascimento</th>
+                  <th>Sexo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="pacientes-body">
+                <tr>
+                  <td colspan="4">Carregando pacientes...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
       </section>
     </main>
-    <script src="../js/session.js"></script>
+    <script type="module" src="../js/session.js"></script>
+    <script type="module" src="pacientes.js"></script>
   </body>
 </html>
