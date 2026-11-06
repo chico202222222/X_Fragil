@@ -40,9 +40,9 @@ for grupo in (sintomas_bp, pacientes_bp, avaliacoes_bp,
 @app.get("/")
 def inicio():
     return app.send_static_file("login/login.html")
+# send static file serve para servir arquivos estaticos, nesse caso a tela de login, que é o ponto de entrada do sistema
 
-
-@app.get("/api")
+@app.get("/api") # testando -_-
 def info_api():
     return jsonify({"mensagem": "API do Sistema de Triagem do X Frágil"})
 
