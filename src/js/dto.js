@@ -1,14 +1,17 @@
 // funcoes que falam com a API do flask
 // todas as telas usam esse arquivo pra chamar o backend
+/* 
+decidimos tirar o prisma do front-end 
+*/
+
 
 let csrfToken = null;
 
-// pega o token csrf (precisa mandar ele nos POST, PATCH e DELETE)
+// pega o token csrf (precisa mandar ele em todo metodo que nao seja GET)
 async function pegarCsrf() {
   if (csrfToken) {
     return csrfToken;
   }
-
   const resposta = await fetch('/api/csrf-token', { credentials: 'include' });
   const dados = await resposta.json();
   csrfToken = dados.csrf_token;
@@ -23,25 +26,25 @@ async function chamarApi(metodo, url, corpo, tentouDeNovo) {
     headers: {},
   };
 
-  if (corpo) {
+  if (corpo) { // se receber um corpo, converte pra JSON pra poder mandar pro backend
     opcoes.headers['Content-Type'] = 'application/json';
-    opcoes.body = JSON.stringify(corpo);
+    opcoes.body = JSON.stringify(corpo); 
   }
 
   if (metodo !== 'GET') {
-    opcoes.headers['X-CSRF-Token'] = await pegarCsrf();
+    opcoes.headers['X-CSRF-Token'] = await pegarCsrf(); // o header do CSRF precisa ser enviado p todas as requisicoes que n sejam get (que alterem dados)
   }
 
   const resposta = await fetch(url, opcoes);
-  const dados = await resposta.json().catch(() => ({}));
-
+  const dados = await resposta.json().catch(() => ({})); 
+  // faz o parse do JSON; se a resposta nao for JSON valido, o catch devolve um objeto vazio pra nao quebrar o codigo
   // token csrf pode ter vencido, pega outro e tenta uma vez
   if (resposta.status === 403 && !tentouDeNovo) {
     csrfToken = null;
     return chamarApi(metodo, url, corpo, true);
   }
 
-  // sessao acabou, volta pro login (menos na propria tela de login)
+  // 401 fora de /api/login e /api/sessao significa que a sessao acabou: volta pro login
   if (resposta.status === 401 && url !== '/api/login' && url !== '/api/sessao') {
     window.location.href = '/login/login.html';
   }

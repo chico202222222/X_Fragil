@@ -9,3 +9,8 @@ label{
     margin-bottom: 5px;
     
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

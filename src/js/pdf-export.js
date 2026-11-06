@@ -1,6 +1,7 @@
 // pega as linhas marcadas na tabela e gera o pdf
 // o jspdf e carregado pelo html (window.jspdf)
 
+
 export function exportToPDF() {
   const avaliacoesSelecionadas = Array.from(
     document.querySelectorAll('.avaliacao-checkbox:checked'),
@@ -21,7 +22,7 @@ export function exportToPDF() {
     return;
   }
 
-  const { jsPDF } = window.jspdf;
+  const { jsPDF } = window.jspdf; // import do jsPDF do objeto global window, decisao feita p n precisar instalar o jspdf via npm e ficar com dependencias desnecessarias e usando node
   const doc = new jsPDF();
   const alturaPagina = doc.internal.pageSize.getHeight();
   let posicaoY = 20;
@@ -43,6 +44,15 @@ export function exportToPDF() {
     doc.text('Score: ' + avaliacao.score, 10, posicaoY + 14);
     doc.text('Resultado: ' + avaliacao.resultado, 10, posicaoY + 21);
     posicaoY += 38;
+    // a tabela nao traz sintomas (a API de listagem nao os envia), entao sem eles pula a parte
+    (avaliacao.sintomas ?? []).forEach((sintoma) => { // operador ?? significa que se nao tiver uma coisa, pula p outra
+      doc.text('Sintoma: ' + sintoma.descricao, 10, posicaoY);
+      doc.text('Resposta: ' + sintoma.resposta, 10, posicaoY + 7);
+      posicaoY += 14;
+    });
+    posicaoY += 5; // espaço entre avaliações
+
+
   });
 
   doc.save('relatorio-avaliacoes.pdf');

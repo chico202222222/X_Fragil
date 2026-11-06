@@ -43,7 +43,7 @@ function criarOpcao(sintomaId, valor, texto) {
 function mostrarSintomas() {
   listaSintomas.replaceChildren();
 
-  sintomas.forEach((sintoma) => {
+  sintomas.forEach((sintoma) => { // forEach é mt mais facil do que for normal, pq ele ja te da o elemento e nao precisa ficar pegando pelo indice
     const linha = document.createElement('div');
     linha.className = 'sintoma';
 
@@ -106,7 +106,7 @@ async function escolherPaciente() {
   caixaResultado.hidden = true;
 
   const paciente = pacientes.find((p) => String(p.id) === selectPaciente.value);
-
+// o .find() retorna o primeiro elemento que satisfaz a condicao !
   if (!paciente) {
     sintomas = [];
     listaSintomas.replaceChildren();
