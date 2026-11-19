@@ -1,0 +1,19 @@
+# Ambiente e segredos
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node / Front
+node_modules/
+src/prisma/
+
+# Sistema
+.DS_Store
+Thumbs.db
